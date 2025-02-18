@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./login.css";
+import { login } from "../../redux/UserSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const naver_id = process.env.CLIENT_ID_NAVER;
@@ -15,10 +17,23 @@ const Login = () => {
 
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    dispatch(
+      login({
+        id: id,
+        password: password,
+        loggedIn: true,
+      })
+    );
+  };
   return (
     <div>
       <div className="login">
-        <form className="login_form">
+        <form className="login_form" onSubmit={(e) => handleSubmit(e)}>
           <h1>Login Here </h1>
           <input
             className="input-field"
@@ -34,7 +49,7 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit" className="login_submit_btn">
+          <button type="submit" className="login-button login_submit_btn">
             Submit
           </button>
         </form>

@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 
 //리액트 리덕스가 제공하는 컴포넌트
 import { Provider } from "react-redux";
-import store from "./redux/configStore";
+import store from "./redux/store";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

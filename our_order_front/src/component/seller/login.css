@@ -6,17 +6,12 @@
   align-items: center;
   height: 100vh;
   width: 100%;
-  max-width: 400px; /* 최대 너비 설정 */
+  max-width: 400px;
   padding: 30px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #333;
+  box-sizing: border-box; /* 크기 계산시 padding을 포함하도록 설정 */
 }
 
 /* 입력창 스타일 */
@@ -28,6 +23,7 @@ h1 {
   border-radius: 4px;
   font-size: 16px;
   outline: none;
+  box-sizing: border-box;
 }
 
 .input-field:focus {
@@ -47,42 +43,28 @@ h1 {
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
 .login-button:hover {
   background-color: #0056b3;
 }
 
-/* 로그인 제출 버튼 */
-.login_submit_btn {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  border: none;
-}
-
-.login_submit_btn :hover {
-  transition: background-color 0.3s;
-}
-
 /* 네이버 로그인 버튼 스타일 */
 .naver-button {
-  background-color: #03c75a; /* 네이버 색상 */
+  background-color: #03c75a;
 }
 
 .naver-button:hover {
   background-color: #00c200;
-  transition: background-color 0.3s;
 }
 
 /* 카카오 로그인 버튼 스타일 */
 .kakao-button {
-  background-color: #ffeb00; /* 카카오 색상 */
+  background-color: #ffeb00;
   color: #3e1f00;
 }
 
 .kakao-button:hover {
   background-color: #ffd100;
-  transition: background-color 0.3s;
 }
 
 /* 회원가입 및 아이디/비밀번호 찾기 영역 */
@@ -101,4 +83,23 @@ h1 {
 .login-util span:hover {
   text-decoration: underline;
   color: #007bff;
+}
+
+/* 로그인 제출 버튼 */
+.login_submit_btn {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  background-color: #333; /* 어두운 색 */
+  color: white; /* 텍스트 색상 */
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-sizing: border-box; /* padding과 border 포함된 크기 계산 */
+}
+
+.login_submit_btn:hover {
+  background-color: #555; /* 호버 시 어두운 색 */
 }

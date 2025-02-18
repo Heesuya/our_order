@@ -1,15 +1,35 @@
-/* 전체 페이지 스타일 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Wrap - 전체 화면을 감싸는 요소 */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 전체 화면 높이 설정 */
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+/* Header와 Footer는 기본적으로 상단과 하단에 위치 */
+header,
+footer {
+  flex-shrink: 0; /* 헤더와 푸터 크기가 변하지 않도록 설정 */
+}
+
+/* Main - 화면 중앙에 위치하도록 설정 */
+.main {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  flex-grow: 1; /* 나머지 공간을 차지하도록 설정 */
+  padding: 20px;
+}
+
+/* 로그인 박스 */
+.login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 400px;
+  width: 100%;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
