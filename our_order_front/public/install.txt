@@ -1,0 +1,5 @@
+25-02-18 18:48  너무 슬프다.. 잘못 만져서 프론트 작업한거 다 날아감.. 
+npm install react-router-dom 
+npm install axios
+npm install redux react-redux
+npm install @reduxjs/toolkit react-redux
