@@ -1,0 +1,113 @@
+/* .signup_wrap을 기준으로 스타일 */
+.signup_wrap {
+  background: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 450px;
+  margin: 0 auto;
+  margin-top: 50px;
+  height: auto;
+  margin-bottom: 50px;
+}
+
+.signup_wrap h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.signup_wrap .form-group {
+  margin-bottom: 20px;
+}
+
+.signup_wrap label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+  font-size: 16px;
+}
+
+.signup_wrap input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.signup_wrap input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.signup_wrap button.btn-small {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.signup_wrap button.btn-small:hover {
+  background-color: #0056b3;
+}
+
+.signup_wrap button.btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.signup_wrap button.btn:hover {
+  background-color: #0056b3;
+}
+
+.signup_wrap .social-login {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.signup_wrap .social-btn {
+  padding: 12px;
+  width: 100%;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.signup_wrap .kakao {
+  background-color: #fee500;
+  color: #3c1e1e;
+}
+
+.signup_wrap .kakao:hover {
+  background-color: #f7d800;
+}
+
+.signup_wrap .naver {
+  background-color: #03c75a;
+}
+
+.signup_wrap .naver:hover {
+  background-color: #02b14b;
+}
+
+.signup_wrap small {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}

@@ -1,4 +1,4 @@
-import Login from "../seller/Login";
+import Login from "../member/Login";
 
 const Main = () => {
   return (

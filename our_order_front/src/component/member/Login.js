@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import "./login.css";
 import { login } from "../../redux/UserSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const naver_id = process.env.CLIENT_ID_NAVER;
   const kakao_id = process.env.CLIENT_ID_KAKAO;
 
@@ -18,6 +20,7 @@ const Login = () => {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
 
+  //redux에서 dispatch는 action을 reducer로 전달
   const dispatch = useDispatch();
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -54,8 +57,10 @@ const Login = () => {
           </button>
         </form>
         <div className="login-util">
-          <span>회원가입</span>
-          <span>아이디/비밀번호찾기</span>
+          <span onClick={() => navigate("/signup")}>회원가입</span>
+          <span onClick={() => navigate("/find-account")}>
+            아이디/비밀번호찾기
+          </span>
         </div>
         <button
           className="login-button naver-button"
