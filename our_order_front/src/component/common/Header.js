@@ -1,10 +1,17 @@
 // Header.js
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/UserSlice";
+import { logout, selectUser } from "../../redux/UserSlice";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const user = useSelector(selectUser);
+  const dispath = useDispatch();
+  const handleLogout = (e) => {
+    e.preventDefault();
+    dispath(logout());
+  };
   return (
     <header className="header">
       <nav>
@@ -20,7 +27,13 @@ const Header = () => {
           </li>
         </ul>
       </nav>
-      <div>{user ? "로그아웃" : "로그인"}</div>
+      <div>
+        {user ? (
+          <span onClick={(e) => handleLogout(e)}>로그아웃</span>
+        ) : (
+          <Link to="/">로그인</Link>
+        )}
+      </div>
     </header>
   );
 };

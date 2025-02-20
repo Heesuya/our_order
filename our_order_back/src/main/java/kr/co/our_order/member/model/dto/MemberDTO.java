@@ -1,4 +1,4 @@
-package kr.co.our_order.seller.dto;
+package kr.co.our_order.member.model.dto;
 
 import org.apache.ibatis.type.Alias;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Alias(value = "member")
 @Schema(description = "회원 정보")
-public class SellerDTO {
+public class MemberDTO {
     @Schema(description = "회원 번호", type = "int")
     private int memberNo;
 

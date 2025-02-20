@@ -111,3 +111,27 @@
   font-size: 14px;
   margin-top: 5px;
 }
+
+.form-group input {
+  box-sizing: border-box;
+}
+
+.addr-wrap {
+  display: flex;
+  justify-content: space-between; /* 아이템들 간에 공간을 균등하게 분배 */
+}
+.addr-wrap button {
+  margin-bottom: 10px;
+}
+
+.input-msg {
+  font-size: 12px;
+}
+
+.input-msg.valid {
+  color: blue; /* 파란색 */
+}
+
+.input-msg.invalid {
+  color: red; /* 빨간색 */
+}
