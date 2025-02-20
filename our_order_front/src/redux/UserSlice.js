@@ -6,22 +6,29 @@ export const userSlice = createSlice({
   name: "user", // 슬라이스 이름 설정 => 나중에 관리하는 상태가 무엇인지 알 수 있음
   initialState: {
     // 상태의 초기값 설정
-    user: null, // user라는 프로퍼티를 null로 초기화하여, 로그인 전에는 null 값을 가지고 있다고 정의
+    loginId: null,
+    memberType: 0, // 0 : 로그아웃 상태 / 1 : 관리자 /  2 : 회원
   },
   reducers: {
     // 상태를 업데이트할 액션을 정의
-    login: (state, action) => {
-      state.user = action.payload; // 로그인 시 user 값 업데이트
+    setLoginId: (state, action) => {
+      state.loginId = action.payload;
+    },
+    setMemberType: (state, action) => {
+      state.memberType = action.payload;
     },
     logout: (state) => {
-      state.user = null; // 로그아웃 시 user 초기화
+      state.loginId = null; // 로그아웃 시 loginId 초기화
+      state.memberType = 0; // 로그아웃 시 memberType 초기화
     },
   },
 });
 
 // 액션과 리듀서 추출
-export const { login, logout } = userSlice.actions;
+export const { setLoginId, setMemberType, logout } = userSlice.actions;
+
 // 상태 선택 함수
-export const selectUser = (state) => state.user.user; // 'user'로 상태를 선택
+export const selectUser = (state) => state.user; // 'user'로 상태를 선택
+
 // 리듀서 내보내기
 export default userSlice.reducer;

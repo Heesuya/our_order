@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import "./signup.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const Signup = () => {
   const backServer = process.env.REACT_APP_BACK_SERVER;
+  const navigate = useNavigate();
 
   const [memberId, setMemberId] = useState("");
   const [memberPw, setMemberPw] = useState("");
@@ -177,8 +179,7 @@ const Signup = () => {
       .then((res) => {
         console.log("회원가입 성공:", res.data);
         alert("회원가입이 완료되었습니다.");
-        // 예: 로그인 페이지로 이동
-        // history.push("/login");
+        navigate("/");
       })
       .catch((err) => {
         console.error("회원가입 실패:", err);
@@ -271,6 +272,7 @@ const Signup = () => {
             onChange={handlePhoneChange}
             onBlur={handlePhoneBlur} // 블러 시 유효성 검사
             placeholder="010-1234-5678"
+            maxLength={13}
             required
           />
           {phoneError && (

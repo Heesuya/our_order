@@ -13,5 +13,7 @@
 		insert into member_tbl values(member_tbl_seq.nextval, #{memberId}, #{memberPw}, #{memberName},
 		#{memberPhone}, #{memberAddr}, #{businessNumber}, 2, sysdate, null, null, null, #{memberEmail})
 	</insert>
-
+	<select id="selectOneMember" resultType="member">
+		select * from member_tbl where member_id=#{memberId}
+	</select>
 </mapper>

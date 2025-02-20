@@ -1,17 +1,19 @@
-// Header.js
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { logout, selectUser } from "../../redux/UserSlice";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Header = () => {
-  const user = useSelector(selectUser);
-  const dispath = useDispatch();
+  const loginId = useSelector((state) => state.user.loginId); // loginId로 상태 가져오기
+  //const memberType = useSelector((state) => state.user.memberType); // memberType 상태 가져오기
+  console.log(loginId + "ddd");
+  const dispatch = useDispatch(); // dispatch 이름 수정
+
   const handleLogout = (e) => {
     e.preventDefault();
-    dispath(logout());
+    dispatch(logout()); // 로그아웃 액션 호출
   };
+
   return (
     <header className="header">
       <nav>
@@ -28,10 +30,10 @@ const Header = () => {
         </ul>
       </nav>
       <div>
-        {user ? (
-          <span onClick={(e) => handleLogout(e)}>로그아웃</span>
+        {loginId ? ( // loginId가 있으면 로그인된 상태로 판단
+          <span onClick={handleLogout}>로그아웃</span>
         ) : (
-          <Link to="/">로그인</Link>
+          <Link to="/">로그인</Link> // 로그인 페이지로 이동
         )}
       </div>
     </header>
