@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { useEffect } from "react";
 import { setLoginId, setMemberType } from "./redux/UserSlice"; // 수정된 부분
+import NaverLoginCallback from "./component/member/NaverLoginCallback";
 
 function App() {
   const dispatch = useDispatch();
@@ -49,13 +50,14 @@ function App() {
 
   return (
     <div className="wrap">
-      <Header />
+      <Header />c
       <main className="content">
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/find-account" element={<FindeAccount />} />
+          <Route path="/naver/callback" element={<NaverLoginCallback />} />
         </Routes>
       </main>
       <Footer />

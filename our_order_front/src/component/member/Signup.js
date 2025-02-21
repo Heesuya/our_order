@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./signup.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import NaverLoginButton from "./NaverLoginButton";
+
 const Signup = () => {
   const backServer = process.env.REACT_APP_BACK_SERVER;
   const navigate = useNavigate();
@@ -189,7 +191,7 @@ const Signup = () => {
 
   return (
     <div className="signup_wrap">
-      <h2>회원가입</h2>
+      <h2>Join</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="member_id">아이디</label>
@@ -349,9 +351,7 @@ const Signup = () => {
         <button className="social-btn kakao" onClick={kakaoLogin}>
           카카오로 가입하기
         </button>
-        <button className="social-btn naver" onClick={naverLogin}>
-          네이버로 가입하기
-        </button>
+        <NaverLoginButton />
       </div>
     </div>
   );

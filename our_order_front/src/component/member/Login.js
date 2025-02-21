@@ -4,20 +4,11 @@ import { setLoginId, setMemberType } from "../../redux/UserSlice"; // 수정된 
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"; // axios를 사용하여 서버와 통신
+import NaverLoginButton from "./NaverLoginButton";
 
 const Login = () => {
   const navigate = useNavigate();
-  const naver_id = process.env.CLIENT_ID_NAVER;
-  const kakao_id = process.env.CLIENT_ID_KAKAO;
   const backServer = process.env.REACT_APP_BACK_SERVER;
-
-  const handleNaverLogin = () => {
-    window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${naver_id}&redirect_uri=http://localhost:8080/login/oauth2/code/naver`;
-  };
-
-  const handleKakaoLogin = () => {
-    window.location.href = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${kakao_id}&redirect_uri=http://localhost:8080/login/oauth2/code/kakao`;
-  };
 
   const [member, setMember] = useState({ memberId: "", memberPw: "" });
 
@@ -80,18 +71,8 @@ const Login = () => {
             아이디/비밀번호찾기
           </span>
         </div>
-        <button
-          className="login-button naver-button"
-          onClick={handleNaverLogin}
-        >
-          네이버 로그인
-        </button>
-        <button
-          className="login-button kakao-button"
-          onClick={handleKakaoLogin}
-        >
-          카카오 로그인
-        </button>
+        <NaverLoginButton />
+        <button className="login-button kakao-button">카카오 로그인</button>
       </div>
     </div>
   );
