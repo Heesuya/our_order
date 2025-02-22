@@ -16,4 +16,16 @@
 	<select id="selectOneMember" resultType="member">
 		select * from member_tbl where member_id=#{memberId}
 	</select>
+	
+	<select id="findByNaverId" resultType="member">
+        select *
+        from member_tbl 
+        where member_phone=#{mobile}
+	</select>
+	
+	<insert id="insertNaverLogin">
+	    insert into member_tbl (member_no, member_name, member_phone, member_level, enroll_date, provider_id, member_email)
+	    values (member_tbl_seq.nextval,  #{memberName}, #{memberPhone}, 2,sysdate, #{providerId}, #{memberEmail})
+	</insert>
+	
 </mapper>

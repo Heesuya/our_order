@@ -15,5 +15,9 @@ public interface MemberDao {
 
 	MemberDTO selectOneMember(String memberId);
 
+	int insertNaverLogin(MemberDTO newUser);
+
+	MemberDTO findByNaverId(String mobile);
+
 
 }
