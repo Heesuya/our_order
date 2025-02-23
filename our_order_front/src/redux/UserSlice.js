@@ -8,6 +8,8 @@ export const userSlice = createSlice({
     // 상태의 초기값 설정
     loginId: null,
     memberType: 0, // 0 : 로그아웃 상태 / 1 : 관리자 /  2 : 회원
+    memberNo: 0,
+    memberName: null,
   },
   reducers: {
     // 상태를 업데이트할 액션을 정의
@@ -17,15 +19,24 @@ export const userSlice = createSlice({
     setMemberType: (state, action) => {
       state.memberType = action.payload;
     },
+    setMemberNo: (state, action) => {
+      state.memberNo = action.payload;
+    },
+    setMemberName: (state, action) => {
+      state.memberName = action.payload;
+    },
     logout: (state) => {
       state.loginId = null; // 로그아웃 시 loginId 초기화
       state.memberType = 0; // 로그아웃 시 memberType 초기화
+      state.memberNo = 0;
+      state.memberName = null;
     },
   },
 });
 
 // 액션과 리듀서 추출
-export const { setLoginId, setMemberType, logout } = userSlice.actions;
+export const { setLoginId, setMemberType, setMemberNo, setMemberName, logout } =
+  userSlice.actions;
 
 // 상태 선택 함수
 export const selectUser = (state) => state.user; // 'user'로 상태를 선택

@@ -1,21 +1,21 @@
 import React, { useEffect } from "react";
 
 const NaverLoginButton = () => {
-  const client_id = process.env.REACT_APP_NAVER_CLIENT_ID;
-  console.log(client_id);
-  useEffect(() => {
-    // 네이버 로그인 객체를 초기화
-    const naverLogin = new window.naver.LoginWithNaverId({
-      clientId: client_id,
-      callbackUrl: "http://localhost:3000/naver/callback", // 로그인 후 리디렉션될 URL
-      isPopup: false, // 팝업 방식 여부
-      loginButton: { color: "green", type: 3, height: 50 }, // 로그인 버튼 스타일
-    });
+  const clientId = process.env.REACT_APP_NAVER_CLIENT_ID;
+  // CSRF 방지를 위한 랜덤 상태값 생성
+  const generateRandomState = () => {
+    return Math.random().toString(36).substring(2, 15);
+  };
+  const redirectUri = encodeURIComponent("http://localhost:9999/auth/callback"); // 네이버 로그인 후 리다이렉트할 URL
+  // 네이버 로그인 URL 생성
+  const state = encodeURIComponent(generateRandomState()); // CSRF 보호를 위한 상태값
+  const naverLoginUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientId}&state=${state}&redirect_uri=${redirectUri}`;
 
-    naverLogin.init(); // 로그인 버튼을 초기화합니다.
-  }, []);
+  const handleLogin = () => {
+    window.location.href = naverLoginUrl; // 네이버 로그인 페이지로 이동
+  };
 
-  return <div id="naverIdLogin"></div>;
+  return <button onClick={handleLogin}>네이버 로그인</button>;
 };
 
 export default NaverLoginButton;

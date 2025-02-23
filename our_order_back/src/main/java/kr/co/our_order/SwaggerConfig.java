@@ -44,7 +44,7 @@ public class SwaggerConfig {
 				.consumes(getConsumeContentType())
 				.produces(getProduceContentType())
 				.apiInfo(swaggerInfo()).select()
-				.apis(RequestHandlerSelectors.basePackage("kr.co.iei"))
+				.apis(RequestHandlerSelectors.basePackage("kr.co.our_order"))
 				.paths(PathSelectors.any())
 				.build()
 				.useDefaultResponseMessages(false);

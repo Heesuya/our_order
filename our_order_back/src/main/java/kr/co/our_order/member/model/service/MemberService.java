@@ -83,8 +83,8 @@ public class MemberService {
 	}
 	
 	//naverLogin
-	public ResponseEntity<Map<String, Object>> processNaverLogin(NaverLoginDTO naverLogin) {
-        Map<String, Object> result = new HashMap<>();
+	public ResponseEntity<Map<String, Object>> processNaverLogin(NaverLoginDTO naverLogin) { 
+		Map<String, Object> result = new HashMap<>();
         String apiUrl = "https://openapi.naver.com/v1/nid/me";
         String header = "Bearer " + naverLogin.getAccessToken();
 
@@ -95,7 +95,7 @@ public class MemberService {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(response);
-            //System.out.println(root);  // 루트 확인
+            System.out.println(root);  // 루트 확인
             
             //api 연결 후 응답에 따라 
             if (root.get("resultcode").asText().equals("00")) {
@@ -109,10 +109,13 @@ public class MemberService {
                 MemberDTO findMember = memberDao.findByNaverId(mobile);
                 //System.out.println("조회된 유저: " + findMember);
                 //DB 저장 되어있을 경우 
-                if (findMember.getProviderId() != null) {
+                if (findMember != null) {
                     result.put("status", "success");
                     result.put("message", "로그인 성공");
-                    result.put("userId", findMember.getProviderId());
+                    result.put("accessToken", naverLogin.getAccessToken());
+                    result.put("memberName", name);
+                    result.put("memberNo", findMember.getMemberNo());
+                    result.put("memberLevel", findMember.getMemberLevel());
                     return ResponseEntity.ok(result);
                 } else {
                 	// DB 안된 경우 DB 저장  ( 이 경우 처음 네이버 가입한 회원이다) 
@@ -121,13 +124,16 @@ public class MemberService {
                     newUser.setMemberEmail(email);
                     newUser.setMemberName(name);
                     newUser.setMemberPhone(mobile);
-                    System.out.println(newUser);
+                    //System.out.println(newUser);
                     int loginResult = memberDao.insertNaverLogin(newUser);
-                    System.out.println("loginResult : "+loginResult);
+                    //System.out.println("loginResult : "+loginResult);
                     if (loginResult > 0) {
                         result.put("status", "success");
                         result.put("message", "회원가입 후 로그인 성공");
-                        result.put("userId", newUser.getMemberId());
+                        result.put("accessToken", naverLogin.getAccessToken());
+                        result.put("memberName", name);
+                        result.put("memberNo", findMember.getMemberNo());
+                        result.put("memberLevel", findMember.getMemberLevel());
                         return ResponseEntity.ok(result);
                     } else {
                         result.put("status", "error");
@@ -148,6 +154,8 @@ public class MemberService {
             return ResponseEntity.status(500).body(result);
         }
     }
+	
+	
 
     private static String get(String apiUrl, Map<String, String> requestHeaders) {
         HttpURLConnection con = connect(apiUrl);
@@ -192,4 +200,23 @@ public class MemberService {
             throw new RuntimeException("API 응답을 읽는데 실패했습니다.", e);
         }
     }
+    
+    public ResponseEntity<String> getRefreshToken(String refreshToken) {
+        System.out.println("refreshToekn : "+refreshToken);
+    	String apiUrl = "https://nid.naver.com/oauth2.0/token";
+        String clientId = "3qw7RTkWMzW4O0Rx8tEH";
+        String clientSecret = "rc0w64ahwl";
+
+        String url = apiUrl + "?grant_type=refresh_token&client_id=" + clientId + "&client_secret=" + clientSecret + "&refresh_token=" + refreshToken;
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        return response;
+    }
+    
+    
+
 }

@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class NaverLoginDTO {
-	private String accessToken;
-    private String state;
-    private String tokenType;
-    private String expiresIn;
+	  private String authorizationCode;  // Authorization Code
+	  private String accessToken;        // Access Token
+	  private String refreshToken;       // Refresh Token
+	  private String tokenType;          // Token Type
+	  private Long expiresIn;            // Expiration tim
+	  private String state;
 }
