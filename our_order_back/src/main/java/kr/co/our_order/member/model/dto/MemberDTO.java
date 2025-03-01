@@ -50,4 +50,7 @@ public class MemberDTO {
 
     @Schema(description = "회원 이메일", type = "String", nullable = true)
     private String memberEmail;
+    
+	private String accessToken;        
+	private String refreshToken;       
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import MemberInfo from "./MemberInfo";
 import { Route, Routes } from "react-router-dom";
+import Callbak from "./Callbak";
 
 const MemberMain = () => {
   return (
@@ -19,6 +20,7 @@ const MemberMain = () => {
         <section className="section">
           <Routes>
             <Route path="info" element={<MemberInfo />} />
+            <Route path="callback" element={<Callbak />} />
           </Routes>
         </section>
       </div>

@@ -82,7 +82,7 @@ public class MemberService {
 		return null;//return m  이 되면 아이디 객체가 가기 때문에 null로 리턴 될 수 있게 코드 수정
 	}
 	
-	//naverLogin
+	//naverLogin  **사용안하는 메소드 
 	public ResponseEntity<Map<String, Object>> processNaverLogin(NaverLoginDTO naverLogin) { 
 		Map<String, Object> result = new HashMap<>();
         String apiUrl = "https://openapi.naver.com/v1/nid/me";
@@ -216,6 +216,37 @@ public class MemberService {
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
         return response;
     }
+
+    public MemberDTO updateUser(Map<String, Object> userInfo) {
+        // 네이버 아이디로 기존 사용자 조회
+        MemberDTO findMember = memberDao.findByNaverId(userInfo.get("mobile").toString());
+        //System.out.println("findMember : "+findMember);
+        // 기존 회원이 있을 경우, 그 회원 정보를 반환
+        if (findMember != null) {
+            return findMember;
+        } else {
+            // 네이버 로그인 사용자 정보 설정
+            MemberDTO naverUser = new MemberDTO();
+            naverUser.setProviderId(userInfo.get("id").toString());
+            naverUser.setMemberEmail(userInfo.get("email").toString());
+            naverUser.setMemberPhone(userInfo.get("mobile").toString());
+            naverUser.setMemberName((userInfo.get("name").toString()));
+            naverUser.setProvider("naver");
+        	
+            //System.out.println("name : "+userInfo.get("name").toString());
+            // 기존 회원이 없으면 새로운 회원 등록
+            int loginResult = memberDao.insertNaverLogin(naverUser);
+            naverUser.setMemberNo(loginResult);
+            if (loginResult > 0) {
+                // 회원 등록 성공 시 등록된 회원 정보 반환
+                return naverUser;
+            } else {
+                // 회원 등록 실패 시 null 반환 (또는 예외 처리)
+               return null;
+            }
+        }
+    }
+
     
     
 

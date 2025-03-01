@@ -1,5 +1,7 @@
 package kr.co.our_order.member.controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import kr.co.our_order.member.model.dto.MemberDTO;
 import kr.co.our_order.member.model.dto.NaverLoginDTO;
 import kr.co.our_order.member.model.service.MemberService;
 
@@ -48,22 +52,53 @@ public class AuthController {
 
     @GetMapping("/callback")
     public ResponseEntity<Void> naverLoginCallback(@RequestParam String code, @RequestParam String state) {
-        //  네이버에서 access token 요청
-        Map<String, Object> tokenInfo = getNaverAccessToken(code, state);
-        System.out.println(tokenInfo);
-        // access token으로 사용자 정보 요청
-        String accessToken = (String) tokenInfo.get("access_token");
-        Map<String, Object> userInfo = getNaverUserInfo(accessToken);
-        System.out.println(userInfo);
+        try {
+            // 1. 네이버에서 access token과 refresh token 요청
+            Map<String, Object> tokenInfo = getNaverAccessToken(code, state);
+            String accessToken = (String) tokenInfo.get("access_token");
+            String refreshToken = (String) tokenInfo.get("refresh_token");
+            //System.out.println(accessToken); 
+            
+            // 2. access token 으로 사용자 정보가져오기 
+            Map<String, Object> userInfo = getNaverUserInfo(accessToken);
+            //System.out.println(userInfo); 
 
-        // 사용자 정보 저장 (필요 시 DB 저장)
-        //memberService.saveOrUpdateUser(userInfo);
+            // 3. 사용자 정보 업데이트
+            MemberDTO naverUser = memberService.updateUser(userInfo);
+            //System.out.println("naverUser : "+naverUser);
+            if (naverUser != null) {
+                //  Refresh Token을 httpOnly Cookie에 저장
+                ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .httpOnly(true)  // JavaScript에서 접근 불가 (XSS 방어)
+                    .secure(true)    // HTTPS에서만 전송
+                    .sameSite("Strict")  // CSRF 방어
+                    .path("/")       // 전체 도메인에서 유효
+                    //.maxAge(Duration.ofDays(7))  // 7일 동안 유지
+                    .build();
 
-        // 프론트엔드로 리다이렉트 (유저 ID 전달)
-        String frontendUrl = "http://localhost:3000/member/info";
-        return ResponseEntity.status(HttpStatus.FOUND)  
-                .header(HttpHeaders.LOCATION, frontendUrl + "?id=" + userInfo.get("id"))
+                // 로그인 성공 시 프론트엔드로 이동
+                String frontendUrl = "http://localhost:3000/member/callback";
+                String encodedMessage = URLEncoder.encode("로그인 성공", StandardCharsets.UTF_8);
+                String encodedMemberNo = URLEncoder.encode(String.valueOf(naverUser.getMemberNo()), StandardCharsets.UTF_8);
+
+                return ResponseEntity.status(HttpStatus.FOUND)
+                    .header(HttpHeaders.LOCATION, frontendUrl + "?status=success&message="+encodedMessage+"&accessToken=" +accessToken+"&memberNo="+encodedMemberNo)
+                    .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString()) // Refresh Token 저장
+                    .build();
+            } else {
+                // 로그인 실패 시 프론트엔드로 이동 (실패 메시지 전달)
+                String frontendUrl = "http://localhost:3000/member/callback";
+                return ResponseEntity.status(HttpStatus.FOUND)
+                    .header(HttpHeaders.LOCATION, frontendUrl + "?status=error")
+                    .build();
+            }
+        } catch (Exception e) {
+            // 예외 발생 시 프론트엔드로 이동 (실패 메시지 전달)
+            String frontendUrl = "http://localhost:3000/member/callback";
+            return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, frontendUrl + "?status=error")
                 .build();
+        }
     }
 
     //  1. 네이버에서 Access Token 요청

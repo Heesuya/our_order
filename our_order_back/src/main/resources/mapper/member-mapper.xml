@@ -24,8 +24,11 @@
 	</select>
 	
 	<insert id="insertNaverLogin">
-	    insert into member_tbl (member_no, member_name, member_phone, member_level, enroll_date, provider_id, member_email)
-	    values (member_tbl_seq.nextval,  #{memberName}, #{memberPhone}, 2,sysdate, #{providerId}, #{memberEmail})
+	    insert into member_tbl (member_no, member_name, member_phone, member_level, enroll_date, provider, provider_id, member_email)
+	    values (member_tbl_seq.nextval,  #{memberName}, #{memberPhone}, 2,sysdate, #{provider}, #{providerId}, #{memberEmail})
+		<selectKey resultType="int" keyProperty="memberNo" order="AFTER">
+			select max(member_no) from member_tbl
+		</selectKey>
 	</insert>
 	
 </mapper>
