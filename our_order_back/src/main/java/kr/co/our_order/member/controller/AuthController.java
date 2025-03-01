@@ -2,7 +2,9 @@ package kr.co.our_order.member.controller;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
+
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,12 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import kr.co.our_order.member.model.dto.MemberDTO;
 import kr.co.our_order.member.model.dto.NaverLoginDTO;
 import kr.co.our_order.member.model.service.MemberService;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping(value="/auth")
 public class AuthController {
 	@Autowired
@@ -38,17 +43,10 @@ public class AuthController {
     //public ResponseEntity<Map<String, Object>> naverlogin(@RequestBody NaverLoginDTO naverLogin) {
     //    return memberService.processNaverLogin(naverLogin);  // 서비스 메서드 호출
    // }
-
-
-    @GetMapping(value = "naverRefresh")
-    public ResponseEntity<String> getRefreshToken(@RequestParam String refreshToken) {
-    System.out.println(11);
-    	return memberService.getRefreshToken(refreshToken);
-    }
-    
     private final String CLIENT_ID = "3qw7RTkWMzW4O0Rx8tEH";
     private final String CLIENT_SECRET = "rc0w64ahwl";
     private final String REDIRECT_URI = "http://localhost:9999/naver/callback"; // 백엔드 URL
+
 
     @GetMapping("/callback")
     public ResponseEntity<Void> naverLoginCallback(@RequestParam String code, @RequestParam String state) {
@@ -73,7 +71,7 @@ public class AuthController {
                     .secure(true)    // HTTPS에서만 전송
                     .sameSite("Strict")  // CSRF 방어
                     .path("/")       // 전체 도메인에서 유효
-                    //.maxAge(Duration.ofDays(7))  // 7일 동안 유지
+                    .maxAge(Duration.ofDays(1))  // 7일 동안 유지
                     .build();
 
                 // 로그인 성공 시 프론트엔드로 이동
@@ -137,5 +135,48 @@ public class AuthController {
             throw new RuntimeException("네이버 로그인 실패: 사용자 정보를 가져올 수 없음");
         }
     }
+    
+    @PostMapping(value = "/naverRefresh")
+    public ResponseEntity<String> getNewToken(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
+        // refreshToken이 없는 경우 예외 처리
+    	System.out.println("refreshToken : "+refreshToken);
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token not found");
+        }
+
+        // 네이버 API로 새로운 토큰 요청
+        String url = "https://nid.naver.com/oauth2.0/token" +
+                     "?grant_type=refresh_token&client_id=" + CLIENT_ID +
+                     "&client_secret=" + CLIENT_SECRET +
+                     "&refresh_token=" + refreshToken;
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+
+        if (response.getBody() != null && response.getBody().containsKey("access_token")) {
+            System.out.println(response.getBody());
+            String accessToken = (String) response.getBody().get("access_token");
+            String newRefreshToken = (String) response.getBody().get("refresh_token");
+
+            // 새 refreshToken이 있다면 쿠키 업데이트
+            ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.ok();
+            if (newRefreshToken != null) {
+                ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                    .httpOnly(true)  // JavaScript에서 접근 불가
+                    .secure(true)    // HTTPS에서만 전송
+                    .sameSite("Strict")  // CSRF 방어
+                    .path("/")       // 전체 도메인에서 유효
+                    .maxAge(Duration.ofDays(1))  // 1일 동안 유지
+                    .build();
+
+                responseBuilder.header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+            }
+
+            return responseBuilder.body(accessToken);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to refresh token");
+        }
+    }
+
 
 }

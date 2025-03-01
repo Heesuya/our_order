@@ -24,8 +24,8 @@ function App() {
   const loginId = useSelector((state) => state.user.loginId);
   const memberType = useSelector((state) => state.user.memberType);
   const backServer = process.env.REACT_APP_BACK_SERVER;
-  console.log("loginddId" + loginId);
-  console.log("memberType" + memberType);
+  //console.log("loginddId" + loginId);
+  //console.log("memberType" + memberType);
 
   useEffect(() => {
     refreshLogin();
@@ -40,16 +40,23 @@ function App() {
     dispatch(setMemberType(0)); // memberType 초기화
     dispatch(setMemberName(""));
     delete axios.defaults.headers.common["Authorization"];
-    window.localStorage.removeItem("refreshToken");
+    window.localStorage.removeItem("accessToken");
     window.localStorage.removeItem("naverAccessToken");
   };
 
   const refreshLogin = async () => {
-    const refreshToken = window.localStorage.getItem("refreshToken");
+    const accessToken = window.localStorage.getItem("accessToken");
     const naverAccessToken = window.localStorage.getItem("naverAccessToken");
-    console.log("네이버 리프레시 토큰:", naverAccessToken); // 값 확인용
+    console.log("naverAccessToken : ", naverAccessToken); // 값 확인용
 
-    if (refreshToken != null) {
+    if (accessToken != null) {
+      const refreshToken = getCookie("refreshToken"); // 쿠키에서 refreshToken 가져오기
+      if (!refreshToken) {
+        console.log("Refresh Token이 없습니다. 로그아웃 처리.");
+        clearLoginState();
+        return;
+      }
+
       axios.defaults.headers.common["Authorization"] = refreshToken;
       axios
         .post(`${backServer}/member/refresh`)
@@ -58,46 +65,45 @@ function App() {
           dispatch(setLoginId(res.data.memberId)); // loginId 업데이트
           dispatch(setMemberType(res.data.memberType)); // memberType 업데이트
           axios.defaults.headers.common["Authorization"] = res.data.accessToken;
-          window.localStorage.setItem("refreshToken", res.data.refreshToken);
+          window.localStorage.setItem("accessToken", res.data.accessToken);
         })
         .catch((err) => {
-          console.log(err);
-          dispatch(setLoginId("")); // 로그인 상태 초기화
-          dispatch(setMemberNo(0));
-          dispatch(setMemberType(0)); // memberType 초기화
-          dispatch(setMemberName(""));
-          delete axios.defaults.headers.common["Authorization"];
-          window.localStorage.removeItem("refreshToken");
+          console.log("로그인 갱신 실패:", err);
+          clearLoginState();
         });
     } else if (naverAccessToken != null) {
       // 네이버 로그인 토큰 갱신
-      try {
-        const clientId = process.env.REACT_APP_NAVER_CLIENT_ID;
-        const clientSecret = process.env.REACT_APP_NAVER_CLIENT_SECRET;
-        console.log(1);
-        const response = await axios.get(`${backServer}/auth/naverRefresh`, {
-          params: {
-            refreshToken: naverAccessToken,
-          },
+
+      axios
+        .post(`${backServer}/auth/naverRefresh`, {}, { withCredentials: true }) // GET 요청으로 변경
+        .then((res) => {
+          console.log("네이버 토큰 갱신:", res);
+          dispatch(setLoginId(res.data.memberId));
+          dispatch(setMemberType(res.data.memberType));
+          axios.defaults.headers.common["Authorization"] = res.data.accessToken;
+          window.localStorage.setItem("naverAccessToken", res.data.accessToken);
+        })
+        .catch((err) => {
+          console.log("네이버 로그인 갱신 실패:", err);
+          clearLoginState();
         });
-        console.log("dd" + response);
-        console.log("네이버 로그인 토큰 갱신", response.data);
-        axios.defaults.headers.common["Authorization"] =
-          response.data.accessToken;
-        window.localStorage.setItem(
-          "naverAccessToken",
-          response.data.access_token
-        );
-      } catch (error) {
-        console.log("네이버 로그인 리프레시 실패", error);
-        clearLoginState();
+    }
+  };
+
+  const getCookie = (name) => {
+    const cookies = document.cookie.split("; ");
+    for (let i = 0; i < cookies.length; i++) {
+      const [cookieName, cookieValue] = cookies[i].split("=");
+      if (cookieName === name) {
+        return decodeURIComponent(cookieValue);
       }
     }
+    return null;
   };
 
   return (
     <div className="wrap">
-      <Header />c
+      <Header />
       <main className="content">
         <Routes>
           <Route path="/" element={<Main />} />
