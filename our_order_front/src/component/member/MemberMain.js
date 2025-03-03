@@ -10,7 +10,6 @@ const MemberMain = () => {
         <section className="section account-box">
           <div className="account-info">
             <span class="material-icons">person</span>
-
             <span>MYPAGE</span>
           </div>
         </section>

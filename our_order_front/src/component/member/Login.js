@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import "./login.css";
-import { setLoginId, setMemberType } from "../../redux/UserSlice"; // 수정된 부분
+import {
+  setMemberName,
+  setMemberNo,
+  setMemberType,
+} from "../../redux/UserSlice"; // 수정된 부분
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"; // axios를 사용하여 서버와 통신
@@ -21,12 +25,14 @@ const Login = () => {
       .then((res) => {
         console.log(res);
         //리덕스를 이용해서 로그인 상태 저장
-        dispatch(setLoginId(res.data.memberId));
-        dispatch(setMemberType(res.data.memberType));
+        dispatch(setMemberNo(res.data.memberName));
+        dispatch(setMemberType(res.data.memberLevel));
+        dispatch(setMemberName(res.data.memberName));
         //로그인 이후 axios요청 시 발급받은 토큰값을 자동으로 axios에 추가하는 설정
         axios.defaults.headers.common["Authorization"] = res.data.accessToken;
         //로그인 상태를 지속적으로 유지시키기위해 발급받은 refreshToken을 브라우저에 저장
         window.localStorage.setItem("refreshToken", res.data.refreshToken);
+        window.localStorage.setItem("loginType", "home");
         navigate("/");
       })
       .catch((err) => {

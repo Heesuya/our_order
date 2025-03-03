@@ -28,6 +28,7 @@ const NaverLoginButton = () => {
         border: "none",
         marginBottom: "5px",
         borderRadius: "5px",
+        cursor: "pointer",
       }}
     ></button>
   );

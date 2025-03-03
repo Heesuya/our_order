@@ -55,7 +55,7 @@ public class MemberController {
 	@PostMapping(value = "/refresh")
 	public ResponseEntity<LoginMemberDTO> refresh(@RequestHeader("Authorization") String token){
 		LoginMemberDTO loginMember = memberService.refresh(token);
-		if(loginMember.getMemberId() != null) {
+		if(loginMember.getMemberName() != null) {
 			return ResponseEntity.ok(loginMember);
 		}else {
 			return ResponseEntity.status(404).build();
@@ -65,7 +65,7 @@ public class MemberController {
 	//join _ login 
 	@PostMapping(value="login") 
 	public ResponseEntity<LoginMemberDTO> login(@RequestBody MemberDTO member){
-		System.out.println("m"+member);
+		//System.out.println("m"+member);
 		LoginMemberDTO loginMember = memberService.login(member);
 		if(loginMember != null) {
 			return ResponseEntity.ok(loginMember);
@@ -73,5 +73,13 @@ public class MemberController {
 			return ResponseEntity.status(404).build();
 		}
 	}
+	
+	@GetMapping
+	public ResponseEntity<MemberDTO> selectOneMember(@RequestHeader("Authorization") String token){
+
+		MemberDTO member = memberService.selectOneMember(token);
+		return ResponseEntity.ok(member);
+	}
+	
 
 }

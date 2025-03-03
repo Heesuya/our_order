@@ -14,9 +14,11 @@
 		#{memberPhone}, #{memberAddr}, #{businessNumber}, 2, sysdate, null, null, null, #{memberEmail})
 	</insert>
 	<select id="selectOneMember" resultType="member">
-		select * from member_tbl where member_id=#{memberId}
+		select * from member_tbl where member_no=#{memberNo}
 	</select>
-	
+	<select id="selectOneMemberId" resultType="member">
+		select * from member_tbl where member_id=#{memberId}
+	</select>	
 	<select id="findByNaverId" resultType="member">
         select *
         from member_tbl 

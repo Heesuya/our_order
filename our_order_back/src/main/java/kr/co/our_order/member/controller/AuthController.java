@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -78,7 +79,15 @@ public class AuthController {
                 String frontendUrl = "http://localhost:3000/member/callback";
                 String encodedMessage = URLEncoder.encode("로그인 성공", StandardCharsets.UTF_8);
                 String encodedMemberNo = URLEncoder.encode(String.valueOf(naverUser.getMemberNo()), StandardCharsets.UTF_8);
-
+                String encodedMemberName = URLEncoder.encode(String.valueOf(naverUser.getMemberName()), StandardCharsets.UTF_8);
+                String encodedMemberLevel = URLEncoder.encode(String.valueOf(naverUser.getMemberLevel()), StandardCharsets.UTF_8);
+                String encodedAccessToken = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
+                String redirectUrl = frontendUrl + 
+                					"?status=success&message=" + encodedMessage + 
+                					"&accessToken=" + encodedAccessToken +
+                					"&memberNo=" + encodedMemberNo + 
+                					"&memberName=" + encodedMemberName + 
+                					"&memberLevel" + encodedMemberLevel;
                 return ResponseEntity.status(HttpStatus.FOUND)
                     .header(HttpHeaders.LOCATION, frontendUrl + "?status=success&message="+encodedMessage+"&accessToken=" +accessToken+"&memberNo="+encodedMemberNo)
                     .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString()) // Refresh Token 저장
@@ -137,11 +146,11 @@ public class AuthController {
     }
     
     @PostMapping(value = "/naverRefresh")
-    public ResponseEntity<String> getNewToken(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
+    public ResponseEntity<MemberDTO> getNewToken(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
         // refreshToken이 없는 경우 예외 처리
     	System.out.println("refreshToken : "+refreshToken);
         if (refreshToken == null || refreshToken.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         // 네이버 API로 새로운 토큰 요청
@@ -159,7 +168,7 @@ public class AuthController {
             String newRefreshToken = (String) response.getBody().get("refresh_token");
 
             // 새 refreshToken이 있다면 쿠키 업데이트
-            ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.ok();
+            HttpHeaders headers = new HttpHeaders();
             if (newRefreshToken != null) {
                 ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", newRefreshToken)
                     .httpOnly(true)  // JavaScript에서 접근 불가
@@ -168,15 +177,28 @@ public class AuthController {
                     .path("/")       // 전체 도메인에서 유효
                     .maxAge(Duration.ofDays(1))  // 1일 동안 유지
                     .build();
-
-                responseBuilder.header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+                
+        		Map<String, Object> userInfo = getNaverUserInfo(response.getBody().get("access_token").toString());
+                MemberDTO member = memberService.getMember(userInfo.get("mobile").toString());
+                headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+                return ResponseEntity.ok().headers(headers).body(member);
+            }else{
+    			return ResponseEntity.status(500).build();
             }
 
-            return responseBuilder.body(accessToken);
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to refresh token");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+    
+	@GetMapping
+	public ResponseEntity<MemberDTO> selectOneMember(@RequestHeader("Authorization") String token){
+        System.out.println("token : "+token);  //공백 -> +로 대체 
+	    String fixedToken = token.replaceAll(" ","+");
+		Map<String, Object> userInfo = getNaverUserInfo(fixedToken);
+        //네이버에서 발급받은 provideId 로 하면 데이터베이스에서 가져오지 못하는걸까 ㅠ? 
+        MemberDTO member = memberService.getMember(userInfo.get("mobile").toString());
+		return ResponseEntity.ok(member);
+	}
 
 }

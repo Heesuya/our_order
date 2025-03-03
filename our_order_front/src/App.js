@@ -16,7 +16,6 @@ import {
   setMemberType,
   setMemberNo,
 } from "./redux/UserSlice"; // 수정된 부분
-import NaverLoginCallback from "./component/member/NaverLoginCallback";
 import MemberMain from "./component/member/MemberMain";
 
 function App() {
@@ -29,9 +28,8 @@ function App() {
 
   useEffect(() => {
     refreshLogin();
-    //window.setInterval(refreshLogin, 30 * 1000); // 30초마다 자동으로 로그인 정보 refresh
-
     window.setInterval(refreshLogin, 60 * 60 * 1000); // 한 시간마다 자동으로 로그인 정보 refresh
+    //window.setInterval(refreshLogin, 30 * 1000); // 30초마다 자동으로 로그인 정보 refresh
   }, []);
 
   const clearLoginState = () => {
@@ -40,17 +38,19 @@ function App() {
     dispatch(setMemberType(0)); // memberType 초기화
     dispatch(setMemberName(""));
     delete axios.defaults.headers.common["Authorization"];
-    window.localStorage.removeItem("accessToken");
+    window.localStorage.removeItem("refreshToken");
     window.localStorage.removeItem("naverAccessToken");
   };
 
-  const refreshLogin = async () => {
-    const accessToken = window.localStorage.getItem("accessToken");
+  const refreshLogin = () => {
+    const refreshToken = window.localStorage.getItem("refreshToken");
     const naverAccessToken = window.localStorage.getItem("naverAccessToken");
     console.log("naverAccessToken : ", naverAccessToken); // 값 확인용
+    const loginType = localStorage.getItem("loginType");
 
-    if (accessToken != null) {
-      const refreshToken = getCookie("refreshToken"); // 쿠키에서 refreshToken 가져오기
+    if (loginType === "home") {
+      //일반 로그인은 refreshToken
+      //const refreshToken = getCookie("refreshToken"); // 쿠키에서 refreshToken 가져오기
       if (!refreshToken) {
         console.log("Refresh Token이 없습니다. 로그아웃 처리.");
         clearLoginState();
@@ -62,8 +62,9 @@ function App() {
         .post(`${backServer}/member/refresh`)
         .then((res) => {
           console.log(res);
-          dispatch(setLoginId(res.data.memberId)); // loginId 업데이트
-          dispatch(setMemberType(res.data.memberType)); // memberType 업데이트
+          dispatch(setMemberNo(res.data.memberName));
+          dispatch(setMemberType(res.data.memberLevel));
+          dispatch(setMemberName(res.data.memberName));
           axios.defaults.headers.common["Authorization"] = res.data.accessToken;
           window.localStorage.setItem("accessToken", res.data.accessToken);
         })
@@ -71,20 +72,20 @@ function App() {
           console.log("로그인 갱신 실패:", err);
           clearLoginState();
         });
-    } else if (naverAccessToken != null) {
+    } else if (loginType === "naver") {
       // 네이버 로그인 토큰 갱신
-
       axios
         .post(`${backServer}/auth/naverRefresh`, {}, { withCredentials: true }) // GET 요청으로 변경
         .then((res) => {
-          console.log("네이버 토큰 갱신:", res);
-          dispatch(setLoginId(res.data.memberId));
-          dispatch(setMemberType(res.data.memberType));
-          axios.defaults.headers.common["Authorization"] = res.data.accessToken;
-          window.localStorage.setItem("naverAccessToken", res.data.accessToken);
+          //console.log("네이버 토큰 갱신:", res);
+          dispatch(setMemberNo(res.data.memberName));
+          dispatch(setMemberType(res.data.memberLevel));
+          dispatch(setMemberName(res.data.memberName));
+          axios.defaults.headers.common["Authorization"] = res.data;
+          //window.localStorage.setItem("naverAccessToken", res.data);
         })
         .catch((err) => {
-          console.log("네이버 로그인 갱신 실패:", err);
+          //console.log("네이버 로그인 갱신 실패:", err);
           clearLoginState();
         });
     }
@@ -110,7 +111,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/find-account" element={<FindeAccount />} />
-          <Route path="/naver/callback" element={<NaverLoginCallback />} />
           <Route path="/member/*" element={<MemberMain />} />
         </Routes>
       </main>

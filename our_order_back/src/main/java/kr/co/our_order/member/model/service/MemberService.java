@@ -56,8 +56,8 @@ public class MemberService {
 	public LoginMemberDTO refresh(String token) {
 		try {
 			LoginMemberDTO loginMember = jwtUtil.checkToken(token);
-			String accessToken = jwtUtil.createAccessToken(loginMember.getMemberId(), loginMember.getMemberType());
-			String refreshToken = jwtUtil.createRefreshToken(loginMember.getMemberId(), loginMember.getMemberType());
+			String accessToken = jwtUtil.createAccessToken(loginMember.getMemberNo(), loginMember.getMemberType(), loginMember.getMemberName());
+			String refreshToken = jwtUtil.createRefreshToken(loginMember.getMemberNo(), loginMember.getMemberType(), loginMember.getMemberName());
 			loginMember.setAccessToken(accessToken);
 			loginMember.setRefreshToken(refreshToken);
 			return loginMember;
@@ -69,14 +69,14 @@ public class MemberService {
 
 	public LoginMemberDTO login(MemberDTO member) {
 		//암호화된 비밀번호를 풀 수가 없어서 아이디만 먼저 조회 후 정보 가져오기.
-		MemberDTO m = memberDao.selectOneMember(member.getMemberId());
+		MemberDTO m = memberDao.selectOneMemberId(member.getMemberId());
 		//입력한 비밀번호와 m의 암호화된 비밀번호 대조 (순서 맞아야 함)
 		if(m != null && encoder.matches(member.getMemberPw(), m.getMemberPw())){
-			String accessToken = jwtUtil.createAccessToken(m.getMemberId(), m.getMemberLevel());
-			String refeshToken = jwtUtil.createRefreshToken(m.getMemberId(), m.getMemberLevel());
+			String accessToken = jwtUtil.createAccessToken(m.getMemberNo(), m.getMemberLevel(), m.getMemberName());
+			String refeshToken = jwtUtil.createRefreshToken(m.getMemberNo(), m.getMemberLevel(), m.getMemberName());
 			//System.out.println(accessToken);
 			//System.out.println(refeshToken);
-			LoginMemberDTO loginMember = new LoginMemberDTO(accessToken, refeshToken, m.getMemberId(), m.getMemberLevel());
+			LoginMemberDTO loginMember = new LoginMemberDTO(accessToken, refeshToken, m.getMemberNo(), m.getMemberLevel(), m.getMemberName());
 			return loginMember;
 		}
 		return null;//return m  이 되면 아이디 객체가 가기 때문에 null로 리턴 될 수 있게 코드 수정
@@ -246,6 +246,20 @@ public class MemberService {
             }
         }
     }
+
+	public MemberDTO selectOneMember(String token) {
+		//로그인시 받은 토큰을 검증한 후 회원아이디랑 등급을 추출해서 리턴받음
+		LoginMemberDTO loginMember = jwtUtil.checkToken(token);
+		//토큰해석으로 받은 아이디를 통해서 DB에서 회원정보 조회
+		MemberDTO member = memberDao.selectOneMember(loginMember.getMemberNo());
+		member.setMemberPw(null); //암호화된 PW 
+		return member;
+	}
+
+	public MemberDTO getMember(String string) {
+        MemberDTO findMember = memberDao.findByNaverId(string);
+		return findMember;
+	}
 
     
     

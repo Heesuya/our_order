@@ -13,11 +13,13 @@ public interface MemberDao {
 
 	int insertMember(MemberDTO member);
 
-	MemberDTO selectOneMember(String memberId);
+	MemberDTO selectOneMember(int memberNo);
 
 	int insertNaverLogin(MemberDTO newUser);
 
 	MemberDTO findByNaverId(String mobile);
+
+	MemberDTO selectOneMemberId(String memberId);
 
 
 }

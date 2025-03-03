@@ -29,7 +29,7 @@ public class JwtUtils {
 	
 	
 	//1시간짜리 토큰생성
-	public String createAccessToken(String memberId, int memberType) {
+	public String createAccessToken(int memberNo, int memberType, String memberName) {
 		//1. 작성해둔 키값을 이용해서 암호화 코드 생성
 		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());//시크릿키 읽어와서 내부에서 쓸 방식으로 변환하는것
 		//2. 토큰 생성시간 및 만료시간 설정
@@ -42,14 +42,15 @@ public class JwtUtils {
 						.issuedAt(startTime)			//토큰발행 시작시간
 						.expiration(expireTime)         //토큰만료 시간           일정시간동안만 쓸수 있게 세탕
 						.signWith(key)                  //암호화 서명
-						.claim("memberId", memberId)    //토큰에 포함할 회원 정보 세팅(key = value)
+						.claim("memberNo", memberNo)    //토큰에 포함할 회원 정보 세팅(key = value)
 						.claim("memberType", memberType)//토큰에 포함할 회원 정보 세팅(key = value)
+						.claim("memberName", memberName)// 
 						.compact();						//생성
 		return token;
 	}
 	//로그인 유지하게 되는게 목적이기에 refresh token 발급
 	//8760시간(1년)짜리 accessToken
-	public String createRefreshToken(String memberId, int memberType) {
+	public String createRefreshToken(int memberNo, int memberType, String memberName) {
 		//1. 작성해둔 키값을 이용해서 암호화 코드 생성
 		SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());//시크릿키 읽어와서 내부에서 쓸 방식으로 변환하는것
 		//2. 토큰 생성시간 및 만료시간 설정
@@ -61,8 +62,9 @@ public class JwtUtils {
 						.issuedAt(startTime)			//토큰발행 시작시간
 						.expiration(expireTime)         //토큰만료 시간           일정시간동안만 쓸수 있게 세탕
 						.signWith(key)                  //암호화 서명
-						.claim("memberId", memberId)    //토큰에 포함할 회원 정보 세팅(key = value)
+						.claim("memberNo", memberNo)    //토큰에 포함할 회원 정보 세팅(key = value)
 						.claim("memberType", memberType)//토큰에 포함할 회원 정보 세팅(key = value)
+						.claim("memberName", memberName)// 
 						.compact();						//생성
 		return token;
 	}
@@ -76,13 +78,15 @@ public class JwtUtils {
 									.build()
 									.parse(token)
 									.getPayload();
-		String memberId = (String)claims.get("memberId");
+		int memberNo = (int)claims.get("memberNo");
 		int memberType =(int)claims.get("memberType");
+		String memberName = (String)claims.get("memberName");
 		//System.out.println(memberId);
 		//System.out.println(memberType);
 		LoginMemberDTO loginMemberDTO = new LoginMemberDTO();
-		loginMemberDTO.setMemberId(memberId);
+		loginMemberDTO.setMemberNo(memberNo);
 		loginMemberDTO.setMemberType(memberType);
+		loginMemberDTO.setMemberName(memberName);
 		return loginMemberDTO;
 	}
 	
