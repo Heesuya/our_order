@@ -78,7 +78,6 @@ const Login = () => {
           </span>
         </div>
         <NaverLoginButton />
-        <button className="login-button kakao-button">카카오 로그인</button>
       </div>
     </div>
   );

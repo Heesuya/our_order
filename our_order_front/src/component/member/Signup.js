@@ -191,6 +191,13 @@ const Signup = () => {
 
   return (
     <div className="signup_wrap">
+      <div className="social-login">
+        <h2>간편가입</h2>
+        <div className="social-login-wrap">
+          <NaverLoginButton />
+        </div>
+      </div>
+      <hr />
       <h2>Join</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -346,13 +353,6 @@ const Signup = () => {
           회원가입
         </button>
       </form>
-
-      <div className="social-login">
-        <button className="social-btn kakao" onClick={kakaoLogin}>
-          카카오로 가입하기
-        </button>
-        <NaverLoginButton />
-      </div>
     </div>
   );
 };

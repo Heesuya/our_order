@@ -19,6 +19,7 @@ const NaverLoginButton = () => {
 
   return (
     <button
+      className="naver-button"
       onClick={handleLogin}
       style={{
         backgroundImage: `url(${img})`, // 문자열 템플릿 사용

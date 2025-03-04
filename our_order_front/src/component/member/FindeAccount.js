@@ -11,6 +11,11 @@ const FindeAccount = () => {
     member_email: "",
   });
 
+  const [idSearch, setIdSsercah] = useState({
+    member_name: "",
+    member_phone: "",
+  });
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -108,15 +113,6 @@ const FindeAccount = () => {
           회원가입
         </button>
       </form>
-
-      <div className="social-login">
-        <button className="social-btn kakao" onClick={kakaoLogin}>
-          카카오 로그인
-        </button>
-        <button className="social-btn naver" onClick={naverLogin}>
-          네이버 로그인
-        </button>
-      </div>
     </div>
   );
 };

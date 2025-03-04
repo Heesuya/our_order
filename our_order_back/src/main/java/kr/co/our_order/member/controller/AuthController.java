@@ -16,6 +16,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -199,6 +200,23 @@ public class AuthController {
         //네이버에서 발급받은 provideId 로 하면 데이터베이스에서 가져오지 못하는걸까 ㅠ? 
         MemberDTO member = memberService.getMember(userInfo.get("mobile").toString());
 		return ResponseEntity.ok(member);
+	}
+
+	@DeleteMapping
+	public ResponseEntity<Void> logout(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
+
+	    // 로그아웃 시 Refresh Token 쿠키 삭제
+	    ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+	            .httpOnly(true)
+	            .secure(true)
+	            .sameSite("Strict")
+	            .path("/")
+	            .maxAge(0)  // 쿠키 즉시 삭제
+	            .build();
+
+	    return ResponseEntity.ok()
+	            .header(HttpHeaders.SET_COOKIE, deleteCookie.toString()) // 쿠키 삭제
+	            .build();
 	}
 
 }
