@@ -1,0 +1,73 @@
+.find-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+button {
+  width: 50%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+button.active {
+  background-color: #4caf50;
+  color: white;
+  font-weight: 600;
+}
+
+button:hover {
+  background-color: #ddd;
+}
+
+.find-form {
+  display: block;
+  margin-top: 20px;
+}
+
+.find-form input {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.submit-btn:hover {
+  background-color: #45a049;
+}
+
+#verification-time {
+  margin-top: 10px;
+  font-size: 14px;
+  color: red;
+}
+
+#time-left {
+  font-weight: bold;
+}

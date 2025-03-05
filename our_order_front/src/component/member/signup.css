@@ -1,6 +1,6 @@
 /* .signup_wrap을 기준으로 스타일 */
 .signup_wrap {
-  background: #fff;
+  background-color: #f9f9f9;
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -59,7 +59,7 @@
 .signup_wrap button.btn {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background-color: #333;
   color: white;
   border: none;
   border-radius: 4px;
@@ -68,7 +68,7 @@
 }
 
 .signup_wrap button.btn:hover {
-  background-color: #0056b3;
+  background-color: #555;
 }
 
 .signup_wrap {
@@ -123,15 +123,6 @@
   cursor: pointer;
 }
 
-.signup_wrap .kakao {
-  background-color: #fee500;
-  color: #3c1e1e;
-}
-
-.signup_wrap .kakao:hover {
-  background-color: #f7d800;
-}
-
 .signup_wrap .naver {
   background-color: #03c75a;
 }
@@ -168,4 +159,26 @@
 
 .input-msg.invalid {
   color: red; /* 빨간색 */
+}
+.input-msg {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.input-msg.valid {
+  color: green;
+}
+
+.input-msg.invalid {
+  color: red;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.invalid {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
 }

@@ -261,6 +261,11 @@ public class MemberService {
 		return findMember;
 	}
 
+	public MemberDTO searchId(MemberDTO member) {
+		MemberDTO searchMember = memberDao.searchId(member);
+		return searchMember;
+	}
+
     
     
 

@@ -21,5 +21,7 @@ public interface MemberDao {
 
 	MemberDTO selectOneMemberId(String memberId);
 
+	MemberDTO searchId(MemberDTO member);
+
 
 }

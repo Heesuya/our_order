@@ -32,5 +32,7 @@
 			select max(member_no) from member_tbl
 		</selectKey>
 	</insert>
-	
+	<select id="searchId" resultType="member">
+		select * from member_tbl where member_name=#{memberName} and member_phone=#{memberPhone}
+	</select>
 </mapper>

@@ -1,5 +1,8 @@
 package kr.co.our_order.member.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -81,5 +84,31 @@ public class MemberController {
 		return ResponseEntity.ok(member);
 	}
 	
-
+	//아이디 찾기 
+	@PostMapping(value = "find-id")
+	public ResponseEntity<Object> searchId(@RequestBody MemberDTO member) {
+	    MemberDTO searchMember = memberService.searchId(member);
+	    if (searchMember != null) {
+	        return ResponseEntity.ok(searchMember);
+	    } else {
+	        Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("error", "Not Found");
+	        errorResponse.put("message", "가입된 회원이 없습니다.");
+	        return ResponseEntity.status(404).body(errorResponse);
+	    }
+	}
+	
+	//비밀번 찾기 
+	@PostMapping(value = "find-pw")
+	public ResponseEntity<Object> searchPw(@RequestBody MemberDTO member) {
+	    MemberDTO searchMember = memberService.searchId(member);
+	   // if (searchMember != null) {
+	        return ResponseEntity.ok(searchMember);
+//	    } else {
+//	        Map<String, String> errorResponse = new HashMap<>();
+//	        errorResponse.put("error", "Not Found");
+//	        errorResponse.put("message", "가입된 회원이 없습니다.");
+//	        return ResponseEntity.status(404).body(errorResponse);
+//	    }
+	}
 }
