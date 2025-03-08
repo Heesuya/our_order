@@ -2,9 +2,14 @@ package kr.co.our_order.member.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +31,8 @@ import kr.co.our_order.member.model.service.MemberService;
 public class MemberController {
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+    private JavaMailSender mailSender;
 	
 	//join _ check-id
 	@GetMapping(value="memberId/{memberId}/check-id")	
@@ -98,17 +105,54 @@ public class MemberController {
 	    }
 	}
 	
-	//비밀번 찾기 
+	//비밀번 찾기 - 이메일로 검증 메일 
 	@PostMapping(value = "find-pw")
 	public ResponseEntity<Object> searchPw(@RequestBody MemberDTO member) {
-	    MemberDTO searchMember = memberService.searchId(member);
-	   // if (searchMember != null) {
-	        return ResponseEntity.ok(searchMember);
-//	    } else {
-//	        Map<String, String> errorResponse = new HashMap<>();
-//	        errorResponse.put("error", "Not Found");
-//	        errorResponse.put("message", "가입된 회원이 없습니다.");
-//	        return ResponseEntity.status(404).body(errorResponse);
-//	    }
+		System.out.println("member : "+member);
+		try {
+            // 회원 정보 확인
+            MemberDTO searchMember = memberService.searchPw(member);
+            if (searchMember == null) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "일치하는 회원 정보가 없습니다."));
+            }
+            System.out.println("searchMember : "+searchMember);
+            // 인증번호 생성 (6자리 랜덤 숫자)
+            String verificationCode = String.format("%06d", new Random().nextInt(999999));
+            
+            // 실제로는 Redis나 DB를 추천
+            Map<String, String> verificationStore = new HashMap<>();
+            verificationStore.put(member.getMemberEmail(), verificationCode);
+            
+            // 이메일 전송
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(member.getMemberEmail());
+            message.setSubject("비밀번호 찾기 인증번호");
+            message.setText("인증번호: [" + verificationCode + "] \n3분 내에 입력해주세요.");
+            mailSender.send(message);
+            
+            // 인증번호를 프론트로 전송
+            return ResponseEntity.ok()
+                .body(Map.of(
+                    "message", "인증번호가 발송되었습니다.",
+                    "verificationCode", verificationCode
+                ));
+                
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "인증번호 발송에 실패했습니다."+ e.getMessage()));
+        }
 	}
+	// 비밀번호 업데이트 
+	@PostMapping(value = "update-pw")
+	public ResponseEntity<Object> updatePw(@RequestBody MemberDTO member) {
+	    int result = memberService.updatePw(member);
+	    if (result > 0) {
+			return ResponseEntity.ok(result);
+	    } else {
+			return ResponseEntity.status(500).build();
+	    }
+	}
+	
+	
 }

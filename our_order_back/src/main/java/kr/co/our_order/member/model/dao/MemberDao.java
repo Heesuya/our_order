@@ -23,5 +23,9 @@ public interface MemberDao {
 
 	MemberDTO searchId(MemberDTO member);
 
+	MemberDTO searchPw(MemberDTO member);
+
+	int updatePw(MemberDTO member);
+
 
 }

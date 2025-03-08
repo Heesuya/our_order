@@ -266,6 +266,18 @@ public class MemberService {
 		return searchMember;
 	}
 
+	public MemberDTO searchPw(MemberDTO member) {
+		MemberDTO searchMember = memberDao.searchPw(member);
+		searchMember.setMemberPw(null);
+		return searchMember;
+	}
+
+	public int updatePw(MemberDTO member) {
+		String encPw = encoder.encode(member.getMemberPw());
+		member.setMemberPw(encPw);
+		return memberDao.updatePw(member);
+	}
+
     
     
 
