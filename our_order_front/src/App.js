@@ -44,9 +44,8 @@ function App() {
 
   const refreshLogin = () => {
     const refreshToken = window.localStorage.getItem("refreshToken");
-    const naverAccessToken = window.localStorage.getItem("naverAccessToken");
-    console.log("naverAccessToken : ", naverAccessToken); // 값 확인용
-    const loginType = localStorage.getItem("loginType");
+    //const naverAccessToken = window.localStorage.getItem("naverAccessToken");
+    const loginType = localStorage.getItem("loginType"); //logintype -> home or naver
 
     if (loginType === "home") {
       //일반 로그인은 refreshToken
@@ -81,8 +80,7 @@ function App() {
           dispatch(setMemberNo(res.data.memberName));
           dispatch(setMemberType(res.data.memberLevel));
           dispatch(setMemberName(res.data.memberName));
-          axios.defaults.headers.common["Authorization"] = res.data;
-          //window.localStorage.setItem("naverAccessToken", res.data);
+          axios.defaults.headers.common["Authorization"] = res.data.accessToken;
         })
         .catch((err) => {
           //console.log("네이버 로그인 갱신 실패:", err);

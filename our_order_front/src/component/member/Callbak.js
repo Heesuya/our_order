@@ -26,6 +26,11 @@ const Callbak = () => {
     if (status === "success" && accessToken) {
       // 성공 시 accessToken 저장
       axios.defaults.headers.common["Authorization"] = `${accessToken}`;
+      console.log("accessToken : " + accessToken);
+      console.log(
+        "Authorization Header 설정값:",
+        axios.defaults.headers.common["Authorization"]
+      );
       window.localStorage.setItem("loginType", "naver");
 
       //const naverAccessToken = window.localStorage.getItem("naverAccessToken");

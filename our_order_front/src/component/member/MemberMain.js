@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import MemberInfo from "./MemberInfo";
-import { Route, Routes } from "react-router-dom";
+import { NavLink, Route, Routes } from "react-router-dom";
 import Callbak from "./Callbak";
+import "./member.css";
 
 const MemberMain = () => {
   return (
@@ -13,7 +14,22 @@ const MemberMain = () => {
             <span>MYPAGE</span>
           </div>
         </section>
-        <section className="section"></section>
+        <section className="section">
+          <div className="side-menu">
+            <ul>
+              <li>
+                <NavLink to="/member/info">
+                  <span>개인정보 관리</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/member/menu">
+                  <span>메뉴 관리</span>
+                </NavLink>
+              </li>
+            </ul>
+          </div>
+        </section>
       </div>
       <div className="mypage-content">
         <section className="section">

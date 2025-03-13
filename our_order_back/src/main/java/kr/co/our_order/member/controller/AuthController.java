@@ -181,6 +181,7 @@ public class AuthController {
                 
         		Map<String, Object> userInfo = getNaverUserInfo(response.getBody().get("access_token").toString());
                 MemberDTO member = memberService.getMember(userInfo.get("mobile").toString());
+                member.setAccessToken(accessToken);
                 headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
                 return ResponseEntity.ok().headers(headers).body(member);
             }else{
@@ -194,7 +195,7 @@ public class AuthController {
     
 	@GetMapping
 	public ResponseEntity<MemberDTO> selectOneMember(@RequestHeader("Authorization") String token){
-        System.out.println("token : "+token);  //공백 -> +로 대체 
+        System.out.println("가져오기 token : "+token);  //공백 -> +로 대체 
 	    String fixedToken = token.replaceAll(" ","+");
 		Map<String, Object> userInfo = getNaverUserInfo(fixedToken);
         //네이버에서 발급받은 provideId 로 하면 데이터베이스에서 가져오지 못하는걸까 ㅠ? 
